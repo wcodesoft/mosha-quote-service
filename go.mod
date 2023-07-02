@@ -24,7 +24,7 @@ require (
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/smarty/assertions v1.15.0 // indirect
 	github.com/smartystreets/goconvey v1.8.1 // indirect
-	github.com/wcodesoft/mosha-author-service v0.1.0 // indirect
+	github.com/wcodesoft/mosha-author-service v0.1.1 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect

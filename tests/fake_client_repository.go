@@ -22,8 +22,8 @@ func (f fakeClientRepository) GetAuthor(id string) (data.Author, error) {
 func NewFakeClientRepository() repository.ClientRepository {
 	return &fakeClientRepository{
 		authors: []data.Author{
-			data.NewWithId("123", "William", "somePic"),
-			data.NewWithId("456", "Shakespeare", "somePic"),
+			data.NewAuthorBuilder().WithId("123").WithName("William").WithPicUrl("somePic").Build(),
+			data.NewAuthorBuilder().WithId("456").WithName("Shakespeare").WithPicUrl("somePic").Build(),
 		},
 	}
 }
