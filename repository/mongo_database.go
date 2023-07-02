@@ -78,7 +78,10 @@ func (m mongoDatabase) UpdateQuote(quote data.Quote) (data.Quote, error) {
 func (m mongoDatabase) DeleteQuote(id string) error {
 	filter := bson.D{{"_id", id}}
 	opts := options.Delete().SetHint(bson.D{{"_id", 1}})
-	_, err := m.coll.DeleteOne(context.Background(), filter, opts)
+	result, err := m.coll.DeleteOne(context.Background(), filter, opts)
+	if result.DeletedCount == 0 {
+		return fmt.Errorf("quote with id %s not found", id)
+	}
 	if err != nil {
 		return err
 	}

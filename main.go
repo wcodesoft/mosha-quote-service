@@ -5,8 +5,11 @@ import (
 	"fmt"
 	"github.com/charmbracelet/log"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
+	pb "github.com/wcodesoft/mosha-quote-service/proto"
 	"github.com/wcodesoft/mosha-quote-service/repository"
 	"github.com/wcodesoft/mosha-quote-service/service"
+	"google.golang.org/grpc"
+	"net"
 	"net/http"
 	"os"
 	"sync"
@@ -51,6 +54,7 @@ func main() {
 	port := getEnv("COMPONENT_PORT", defaultHttpPort)
 	mongoHost := getEnv("MONGO_DB_HOST", defaultMongoHost)
 	authorServiceAddress := getEnv("AUTHOR_SERVICE_ADDRESS", authorGrpcAddress)
+	grpcPort := getEnv("GRPC_PORT", defaultGrpcPort)
 
 	clientsRepository := repository.NewClientRepository(repository.ClientsAddress{
 		AuthorServiceAddress: authorServiceAddress,
@@ -61,7 +65,7 @@ func main() {
 
 	wg := new(sync.WaitGroup)
 
-	wg.Add(1)
+	wg.Add(2)
 
 	go func() {
 		log.Infof("Starting %s http on %s", QuoteServiceName, port)
@@ -70,6 +74,27 @@ func main() {
 		if err := http.ListenAndServe(fmt.Sprintf(":%s", port), router.MakeHandler()); err != nil {
 			log.Fatalf("Unable to start service %q: %s", QuoteServiceName, err)
 		}
+		wg.Done()
+	}()
+
+	go func() {
+		logger := log.New(os.Stderr)
+		loggerOpts := []logging.Option{
+			logging.WithLogOnEvents(logging.StartCall, logging.FinishCall),
+		}
+		// Create a new GrpcRouter.
+		log.Infof("Starting %s grpc on %s", QuoteServiceName, grpcPort)
+		lis, err := net.Listen("tcp", fmt.Sprintf(":%s", grpcPort))
+		if err != nil {
+			log.Fatalf("Failed to listen: %v", err)
+		}
+		grpcServer := grpc.NewServer(
+			grpc.ChainUnaryInterceptor(
+				logging.UnaryServerInterceptor(InterceptorLogger(logger), loggerOpts...),
+			),
+		)
+		pb.RegisterQuoteServiceServer(grpcServer, service.NewGrpcRouter(s))
+		grpcServer.Serve(lis)
 		wg.Done()
 	}()
 
