@@ -1,15 +1,14 @@
-package tests
+package data
 
 import (
 	. "github.com/smartystreets/goconvey/convey"
-	"github.com/wcodesoft/mosha-quote-service/data"
 	"testing"
 )
 
 func TestQuote(t *testing.T) {
 
 	Convey("With QuoteBuilder", t, func() {
-		quoteBuilder := data.NewQuoteBuilder()
+		quoteBuilder := NewQuoteBuilder()
 
 		Convey("When building a quote", func() {
 			quote := quoteBuilder.Build()

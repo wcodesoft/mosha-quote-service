@@ -4,6 +4,7 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/wcodesoft/mosha-quote-service/repository"
 	"github.com/wcodesoft/mosha-quote-service/service"
+	mdb "github.com/wcodesoft/mosha-service-common/database"
 	"os"
 	"sync"
 )
@@ -34,7 +35,13 @@ func main() {
 	clientsRepository := repository.NewClientRepository(repository.ClientsAddress{
 		AuthorServiceAddress: authorServiceAddress,
 	})
-	database := repository.NewMongoDatabase(mongoHost, defaultDatabase)
+
+	mongoClient, err := mdb.NewMongoClient(mongoHost)
+	if err != nil {
+		log.Fatal(err)
+	}
+	connection := mdb.NewMongoConnection(mongoClient, defaultDatabase, "quotes")
+	database := repository.NewMongoDatabase(connection)
 	repo := repository.New(database, clientsRepository)
 	s := service.New(repo)
 
@@ -45,13 +52,16 @@ func main() {
 	go func() {
 		// Create a new HttpRouter.
 		router := service.NewHttpRouter(s, QuoteServiceName)
-		router.Start(httpPort)
-		wg.Done()
+		if err := router.Start(httpPort); err != nil {
+			log.Fatal(err)
+		}
 	}()
 
 	go func() {
 		grpcRouter := service.NewGrpcRouter(s, QuoteServiceName)
-		grpcRouter.Start(grpcPort)
+		if err := grpcRouter.Start(grpcPort); err != nil {
+			log.Fatal(err)
+		}
 		wg.Done()
 	}()
 

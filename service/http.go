@@ -1,6 +1,8 @@
 package service
 
 import (
+	mhttp "github.com/wcodesoft/mosha-service-common/http"
+
 	"encoding/json"
 	"fmt"
 	"github.com/charmbracelet/log"
@@ -8,11 +10,8 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/wcodesoft/mosha-quote-service/data"
 	"net/http"
+	"time"
 )
-
-type idResponse struct {
-	ID string `json:"id"`
-}
 
 type HttpRouter struct {
 	service     Service
@@ -20,7 +19,8 @@ type HttpRouter struct {
 }
 
 func NewHttpRouter(s Service, serviceName string) HttpRouter {
-	return HttpRouter{service: s,
+	return HttpRouter{
+		service:     s,
 		serviceName: serviceName,
 	}
 }
@@ -38,33 +38,27 @@ func (h HttpRouter) MakeHandler() http.Handler {
 	return r
 }
 
-func encodeResponse(w http.ResponseWriter, response interface{}) {
-	if err := json.NewEncoder(w).Encode(response); err != nil {
-		w.Write([]byte("Error encoding response"))
-	}
-}
-
 func (h HttpRouter) addQuoteHandler(w http.ResponseWriter, r *http.Request) {
 	var request data.Quote
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		encodeResponse(w, err)
+		mhttp.EncodeError(w, err)
 		return
 	}
 
 	resp, err := h.service.CreateQuote(request)
 
 	if err != nil {
-		encodeResponse(w, err)
+		mhttp.EncodeError(w, err)
 		return
 	}
 
-	encodeResponse(w, idResponse{ID: resp})
+	mhttp.EncodeResponse(w, mhttp.IdResponse{ID: resp})
 }
 
 func (h HttpRouter) listAllHandler(w http.ResponseWriter, _ *http.Request) {
 	resp := h.service.ListAll()
 
-	encodeResponse(w, resp)
+	mhttp.EncodeResponse(w, resp)
 }
 
 func (h HttpRouter) listByAuthorHandler(w http.ResponseWriter, r *http.Request) {
@@ -72,7 +66,7 @@ func (h HttpRouter) listByAuthorHandler(w http.ResponseWriter, r *http.Request) 
 
 	resp := h.service.GetAuthorQuotes(authorId)
 
-	encodeResponse(w, resp)
+	mhttp.EncodeResponse(w, resp)
 }
 
 func (h HttpRouter) getQuoteHandler(w http.ResponseWriter, r *http.Request) {
@@ -80,10 +74,10 @@ func (h HttpRouter) getQuoteHandler(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := h.service.GetQuote(id)
 	if err != nil {
-		encodeResponse(w, err)
+		mhttp.EncodeError(w, err)
 		return
 	}
-	encodeResponse(w, resp)
+	mhttp.EncodeResponse(w, resp)
 }
 
 func (h HttpRouter) deleteQuoteHandler(w http.ResponseWriter, r *http.Request) {
@@ -91,31 +85,38 @@ func (h HttpRouter) deleteQuoteHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := h.service.DeleteQuote(id)
 	if err != nil {
-		encodeResponse(w, err)
+		mhttp.EncodeError(w, err)
 		return
 	}
-	encodeResponse(w, idResponse{ID: id})
+	mhttp.EncodeResponse(w, mhttp.IdResponse{ID: id})
 }
 
 func (h HttpRouter) updateQuoteHandler(w http.ResponseWriter, r *http.Request) {
 	var request data.Quote
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		encodeResponse(w, err)
+		mhttp.EncodeError(w, err)
 		return
 	}
 
 	result, err := h.service.UpdateQuote(request)
 	if err != nil {
-		encodeResponse(w, err)
+		mhttp.EncodeError(w, err)
 		return
 	}
-	encodeResponse(w, result)
+	mhttp.EncodeResponse(w, result)
 }
 
-func (h HttpRouter) Start(port string) {
+func (h HttpRouter) Start(port string) error {
 	log.Infof("Starting %s http on %s", h.serviceName, port)
 
-	if err := http.ListenAndServe(fmt.Sprintf(":%s", port), h.MakeHandler()); err != nil {
-		log.Fatalf("Unable to start service %q: %s", h.serviceName, err)
+	server := &http.Server{
+		Addr:              fmt.Sprintf(":%s", port),
+		Handler:           h.MakeHandler(),
+		ReadHeaderTimeout: 3 * time.Second,
 	}
+
+	if err := server.ListenAndServe(); err != nil {
+		return fmt.Errorf("unable to start service %q: %s", h.serviceName, err)
+	}
+	return nil
 }
