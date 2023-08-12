@@ -3,10 +3,13 @@ name: Test Buso Golang library
 on:
   push:
     branches:
-      - 'main'
+      - '**'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+
+env:
+  CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
 
 jobs:
 
@@ -27,4 +30,13 @@ jobs:
       #       Run unit tests for the library
       #----------------------------------------------
       - name: Run unit tests on the Golang library
-        run: go test -v ./...
+        run: go test -coverprofile=cover.out -v ./...
+
+      #----------------------------------------------
+      #       Send test coverage to Codacy
+      #----------------------------------------------
+      - name: Report test-coverage to Codacy
+        run: |
+          # Install the CLI
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) report \
+          --force-coverage-parser go -r ./cover.out

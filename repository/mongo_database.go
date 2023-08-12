@@ -3,31 +3,23 @@ package repository
 import (
 	"context"
 	"fmt"
-	"github.com/charmbracelet/log"
 	"github.com/wcodesoft/mosha-quote-service/data"
+	mdb "github.com/wcodesoft/mosha-service-common/database"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type mongoDatabase struct {
-	client *mongo.Client
-	coll   *mongo.Collection
+	connection *mdb.MongoConnection
+	coll       *mongo.Collection
 }
 
-// NewMongoDatabase creates a new MongoDB database.
-func NewMongoDatabase(mongoURI string, database string) Database {
-	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
-	opts := options.Client().ApplyURI(mongoURI).SetServerAPIOptions(serverAPI)
-	client, err := mongo.Connect(context.TODO(), opts)
-	if err != nil {
-		panic(err)
-	}
-	coll := client.Database(database).Collection("quotes")
-	log.Infof("Connected to MongoDB: %s", mongoURI)
+// NewMongoDatabase creates a new mongo database.
+func NewMongoDatabase(connection *mdb.MongoConnection) Database {
 	return &mongoDatabase{
-		client: client,
-		coll:   coll,
+		connection: connection,
+		coll:       connection.Collection,
 	}
 }
 

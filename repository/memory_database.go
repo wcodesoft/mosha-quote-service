@@ -1,9 +1,8 @@
-package tests
+package repository
 
 import (
 	"fmt"
 	"github.com/wcodesoft/mosha-quote-service/data"
-	"github.com/wcodesoft/mosha-quote-service/repository"
 )
 
 type inMemoryDatabase struct {
@@ -59,7 +58,7 @@ func (db inMemoryDatabase) GetAuthorQuotes(authorID string) []data.Quote {
 	return quotes
 }
 
-func NewInMemoryDatabase() repository.Database {
+func NewInMemoryDatabase() Database {
 	return &inMemoryDatabase{
 		storage: make(map[string]data.Quote),
 	}

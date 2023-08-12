@@ -1,9 +1,8 @@
-package tests
+package repository
 
 import (
 	"fmt"
 	"github.com/wcodesoft/mosha-author-service/data"
-	"github.com/wcodesoft/mosha-quote-service/repository"
 )
 
 type fakeClientRepository struct {
@@ -19,7 +18,7 @@ func (f fakeClientRepository) GetAuthor(id string) (data.Author, error) {
 	return data.Author{}, fmt.Errorf("author %q do not exist in database", id)
 }
 
-func NewFakeClientRepository() repository.ClientRepository {
+func NewFakeClientRepository() ClientRepository {
 	return &fakeClientRepository{
 		authors: []data.Author{
 			data.NewAuthorBuilder().WithId("123").WithName("William").WithPicUrl("somePic").Build(),

@@ -3,15 +3,11 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/charmbracelet/log"
-	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"github.com/wcodesoft/mosha-quote-service/data"
-	"github.com/wcodesoft/mosha-quote-service/logger"
 	pb "github.com/wcodesoft/mosha-quote-service/proto"
-	"google.golang.org/grpc"
+	"github.com/wcodesoft/mosha-service-common/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"net"
-	"os"
 )
 
 // GrpcRouter represents the gRPC router.
@@ -108,23 +104,15 @@ func (s server) GetQuotesByAuthor(_ context.Context, request *pb.GetQuotesByAuth
 	return &pb.ListQuotesResponse{Quotes: pbQuotes}, nil
 }
 
-func (g GrpcRouter) Start(port string) {
-	l := log.New(os.Stderr)
-	loggerOpts := []logging.Option{
-		logging.WithLogOnEvents(logging.StartCall, logging.FinishCall),
-	}
-	// Create a new GrpcRouter.
-	log.Infof("Starting %s grpc on %s", g.serviceName, port)
+func (g GrpcRouter) Start(port string) error {
+	grpcServer := grpc.CreateNewGRPCServer()
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
 	if err != nil {
-		log.Fatalf("Failed to listen: %v", err)
+		return fmt.Errorf("failed to listen: %v", err)
 	}
-	grpcServer := grpc.NewServer(
-		grpc.ChainUnaryInterceptor(
-			logging.UnaryServerInterceptor(logger.InterceptorLogger(l), loggerOpts...),
-			// Add logger interceptor to grpc server.
-		),
-	)
 	pb.RegisterQuoteServiceServer(grpcServer, g.server)
-	grpcServer.Serve(lis)
+	if err := grpcServer.Serve(lis); err != nil {
+		return fmt.Errorf("failed to serve: %v", err)
+	}
+	return nil
 }
