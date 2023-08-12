@@ -1,5 +1,7 @@
 # mosha-quote-service
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/bb10938daac84a34a66c9a4be906720c)](https://app.codacy.com/gh/wcodesoft/mosha-quote-service/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+
 Quote microservice used in Mosha
 
 ## Database
