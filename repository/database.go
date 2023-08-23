@@ -2,21 +2,21 @@ package repository
 
 import "github.com/wcodesoft/mosha-quote-service/data"
 
-// Database represents the database interface.
+// Database represents the databaseName interface.
 type Database interface {
-	// AddQuote adds a new quote to the database.
+	// AddQuote adds a new quote to the databaseName.
 	AddQuote(quote data.Quote) (string, error)
 
-	// ListAll returns all quotes in the database.
+	// ListAll returns all quotes in the databaseName.
 	ListAll() []data.Quote
 
-	// UpdateQuote updates a quote in the database.
+	// UpdateQuote updates a quote in the databaseName.
 	UpdateQuote(quote data.Quote) (data.Quote, error)
 
-	// DeleteQuote deletes a quote from the database.
+	// DeleteQuote deletes a quote from the databaseName.
 	DeleteQuote(id string) error
 
-	// GetQuote returns a quote from the database.
+	// GetQuote returns a quote from the databaseName.
 	GetQuote(id string) (data.Quote, error)
 
 	// GetAuthorQuotes returns all quotes from an author.

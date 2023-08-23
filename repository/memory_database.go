@@ -11,7 +11,7 @@ type inMemoryDatabase struct {
 
 func (db inMemoryDatabase) AddQuote(quote data.Quote) (string, error) {
 	if _, ok := db.storage[quote.ID]; ok {
-		return "", fmt.Errorf("quote %q already exist in database", quote.ID)
+		return "", fmt.Errorf("quote %q already exist in databaseName", quote.ID)
 	}
 	db.storage[quote.ID] = quote
 	return quote.ID, nil
@@ -27,7 +27,7 @@ func (db inMemoryDatabase) ListAll() []data.Quote {
 
 func (db inMemoryDatabase) UpdateQuote(quote data.Quote) (data.Quote, error) {
 	if _, ok := db.storage[quote.ID]; !ok {
-		return data.Quote{}, fmt.Errorf("quote %q do not exist in database", quote.ID)
+		return data.Quote{}, fmt.Errorf("quote %q do not exist in databaseName", quote.ID)
 	}
 	db.storage[quote.ID] = quote
 	return db.storage[quote.ID], nil
@@ -35,7 +35,7 @@ func (db inMemoryDatabase) UpdateQuote(quote data.Quote) (data.Quote, error) {
 
 func (db inMemoryDatabase) DeleteQuote(id string) error {
 	if _, ok := db.storage[id]; !ok {
-		return fmt.Errorf("quote %q do not exist in database", id)
+		return fmt.Errorf("quote %q do not exist in databaseName", id)
 	}
 	delete(db.storage, id)
 	return nil
@@ -43,7 +43,7 @@ func (db inMemoryDatabase) DeleteQuote(id string) error {
 
 func (db inMemoryDatabase) GetQuote(id string) (data.Quote, error) {
 	if _, ok := db.storage[id]; !ok {
-		return data.Quote{}, fmt.Errorf("quote %q do not exist in database", id)
+		return data.Quote{}, fmt.Errorf("quote %q do not exist in databaseName", id)
 	}
 	return db.storage[id], nil
 }
