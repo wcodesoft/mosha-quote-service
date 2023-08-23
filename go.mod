@@ -9,7 +9,7 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.0.0-rc.5
 	github.com/smartystreets/goconvey v1.8.1
 	github.com/wcodesoft/mosha-author-service v0.1.1
-	github.com/wcodesoft/mosha-service-common v0.0.3
+	github.com/wcodesoft/mosha-service-common v0.0.4
 	go.mongodb.org/mongo-driver v1.12.1
 	google.golang.org/grpc v1.56.1
 	google.golang.org/protobuf v1.31.0
@@ -17,6 +17,7 @@ require (
 
 require (
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
+	github.com/brianvoe/gofakeit/v6 v6.23.1 // indirect
 	github.com/charmbracelet/lipgloss v0.7.1 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect

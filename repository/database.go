@@ -39,11 +39,11 @@ func fromQuote(quote data.Quote) quoteDB {
 	}
 }
 
-func toQuote(quote quoteDB) data.Quote {
+func toQuote(qdb quoteDB) data.Quote {
 	return data.Quote{
-		ID:        quote.ID,
-		AuthorID:  quote.AuthorID,
-		Text:      quote.Text,
-		Timestamp: quote.Timestamp,
+		ID:        qdb.ID,
+		AuthorID:  qdb.AuthorID,
+		Text:      qdb.Text,
+		Timestamp: qdb.Timestamp,
 	}
 }

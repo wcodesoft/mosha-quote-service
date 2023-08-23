@@ -21,7 +21,7 @@ type clientRepository struct {
 	client pb.AuthorServiceClient
 }
 
-func (c clientRepository) GetAuthor(id string) (data.Author, error) {
+func (c *clientRepository) GetAuthor(id string) (data.Author, error) {
 	author, err := c.client.GetAuthor(context.Background(), &pb.GetAuthorRequest{Id: id})
 	if err != nil {
 		log.Errorf("could not get author with id: %s", id)
