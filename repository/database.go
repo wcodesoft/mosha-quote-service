@@ -2,7 +2,7 @@ package repository
 
 import "github.com/wcodesoft/mosha-quote-service/data"
 
-// Database represents the database interface.
+// Database represents the databaseName interface.
 type Database interface {
 	// AddQuote adds a new quote to the database.
 	AddQuote(quote data.Quote) (string, error)
@@ -39,11 +39,11 @@ func fromQuote(quote data.Quote) quoteDB {
 	}
 }
 
-func toQuote(quote quoteDB) data.Quote {
+func toQuote(qdb quoteDB) data.Quote {
 	return data.Quote{
-		ID:        quote.ID,
-		AuthorID:  quote.AuthorID,
-		Text:      quote.Text,
-		Timestamp: quote.Timestamp,
+		ID:        qdb.ID,
+		AuthorID:  qdb.AuthorID,
+		Text:      qdb.Text,
+		Timestamp: qdb.Timestamp,
 	}
 }

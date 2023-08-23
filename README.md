@@ -1,6 +1,8 @@
 # mosha-quote-service
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/bb10938daac84a34a66c9a4be906720c)](https://app.codacy.com/gh/wcodesoft/mosha-quote-service/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/bb10938daac84a34a66c9a4be906720c)](https://app.codacy.com/gh/wcodesoft/mosha-quote-service/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Quote microservice used in Mosha
 

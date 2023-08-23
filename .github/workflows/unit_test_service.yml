@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       #----------------------------------------------
-      #       check-out repo and setup Java
+      #       check-out repo and setup Go
       #----------------------------------------------
       - name: Check out repository
         uses: actions/checkout@v3

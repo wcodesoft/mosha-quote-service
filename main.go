@@ -5,6 +5,7 @@ import (
 	"github.com/wcodesoft/mosha-quote-service/repository"
 	"github.com/wcodesoft/mosha-quote-service/service"
 	mdb "github.com/wcodesoft/mosha-service-common/database"
+	mhttp "github.com/wcodesoft/mosha-service-common/http"
 	"os"
 	"sync"
 )
@@ -50,9 +51,14 @@ func main() {
 	wg.Add(2)
 
 	go func() {
-		// Create a new HttpRouter.
-		router := service.NewHttpRouter(s, QuoteServiceName)
-		if err := router.Start(httpPort); err != nil {
+		// Create a new QuoteService.
+		hs := service.QuoteService{
+			Service: s,
+			Port:    httpPort,
+			Name:    QuoteServiceName,
+		}
+		err := mhttp.StartHttpService(&hs)
+		if err != nil {
 			log.Fatal(err)
 		}
 	}()

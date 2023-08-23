@@ -41,7 +41,7 @@ func (m mongoDatabase) AddQuote(quote data.Quote) (string, error) {
 func (m mongoDatabase) ListAll() []data.Quote {
 	cursor, err := m.coll.Find(context.Background(), bson.D{})
 	if err != nil {
-		panic(err)
+		return []data.Quote{}
 	}
 	var results []quoteDB
 	if err = cursor.All(context.TODO(), &results); err != nil {
@@ -98,7 +98,7 @@ func (m mongoDatabase) GetAuthorQuotes(authorID string) []data.Quote {
 	filter := bson.D{{"authorid", authorID}}
 	cursor, err := m.coll.Find(context.Background(), filter)
 	if err != nil {
-		panic(err)
+		return []data.Quote{}
 	}
 	var results []quoteDB
 	if err = cursor.All(context.Background(), &results); err != nil {
