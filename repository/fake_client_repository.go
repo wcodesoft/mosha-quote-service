@@ -15,7 +15,7 @@ func (f fakeClientRepository) GetAuthor(id string) (data.Author, error) {
 			return author, nil
 		}
 	}
-	return data.Author{}, fmt.Errorf("author %q do not exist in databaseName", id)
+	return data.Author{}, fmt.Errorf("author %q do not exist in database", id)
 }
 
 func NewFakeClientRepository() ClientRepository {

@@ -4,19 +4,19 @@ import "github.com/wcodesoft/mosha-quote-service/data"
 
 // Repository represents the repository interface.
 type Repository interface {
-	// AddQuote adds a new quote to the databaseName.
+	// AddQuote adds a new quote to the database.
 	AddQuote(quote data.Quote) (string, error)
 
-	// ListAll returns all quotes in the databaseName.
+	// ListAll returns all quotes in the database.
 	ListAll() []data.Quote
 
-	// UpdateQuote updates a quote in the databaseName.
+	// UpdateQuote updates a quote in the database.
 	UpdateQuote(quote data.Quote) (data.Quote, error)
 
-	// DeleteQuote deletes a quote from the databaseName.
+	// DeleteQuote deletes a quote from the database.
 	DeleteQuote(id string) error
 
-	// GetQuote returns a quote from the databaseName.
+	// GetQuote returns a quote from the database.
 	GetQuote(id string) (data.Quote, error)
 
 	// GetAuthorQuotes returns all quotes from an author.
@@ -41,7 +41,7 @@ func (s repository) authorExist(authorId string) error {
 	return err
 }
 
-// AddQuote adds a new quote to the databaseName.
+// AddQuote adds a new quote to the database.
 func (s repository) AddQuote(quote data.Quote) (string, error) {
 	if err := s.authorExist(quote.AuthorID); err != nil {
 		return "", err

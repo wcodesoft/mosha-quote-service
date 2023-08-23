@@ -15,7 +15,7 @@ type mongoDatabase struct {
 	coll       *mongo.Collection
 }
 
-// NewMongoDatabase creates a new mongo databaseName.
+// NewMongoDatabase creates a new mongo database.
 func NewMongoDatabase(connection *mdb.MongoConnection) Database {
 	return &mongoDatabase{
 		connection: connection,
@@ -23,7 +23,7 @@ func NewMongoDatabase(connection *mdb.MongoConnection) Database {
 	}
 }
 
-// AddQuote adds a new quote to the databaseName.
+// AddQuote adds a new quote to the database.
 func (m mongoDatabase) AddQuote(quote data.Quote) (string, error) {
 	if quote.Text == "" {
 		panic("Quote text is empty")
@@ -37,7 +37,7 @@ func (m mongoDatabase) AddQuote(quote data.Quote) (string, error) {
 	return fmt.Sprintf("%v", newId), nil
 }
 
-// ListAll returns all quotes from the databaseName.
+// ListAll returns all quotes from the database.
 func (m mongoDatabase) ListAll() []data.Quote {
 	cursor, err := m.coll.Find(context.Background(), bson.D{})
 	if err != nil {
@@ -54,7 +54,7 @@ func (m mongoDatabase) ListAll() []data.Quote {
 	return quotes
 }
 
-// UpdateQuote updates a quote in the databaseName.
+// UpdateQuote updates a quote in the database.
 func (m mongoDatabase) UpdateQuote(quote data.Quote) (data.Quote, error) {
 	filter := bson.D{{"_id", quote.ID}}
 	opts := options.Update().SetHint(bson.D{{"_id", 1}})
@@ -66,7 +66,7 @@ func (m mongoDatabase) UpdateQuote(quote data.Quote) (data.Quote, error) {
 	return quote, nil
 }
 
-// DeleteQuote deletes a quote from the databaseName.
+// DeleteQuote deletes a quote from the database.
 func (m mongoDatabase) DeleteQuote(id string) error {
 	filter := bson.D{{"_id", id}}
 	opts := options.Delete().SetHint(bson.D{{"_id", 1}})
@@ -80,7 +80,7 @@ func (m mongoDatabase) DeleteQuote(id string) error {
 	return nil
 }
 
-// GetQuote returns a quote from the databaseName.
+// GetQuote returns a quote from the database.
 func (m mongoDatabase) GetQuote(id string) (data.Quote, error) {
 	filter := bson.D{{"_id", id}}
 	opts := options.FindOne().SetHint(bson.D{{"_id", 1}})
