@@ -38,7 +38,7 @@ func (c *clientRepository) GetAuthor(id string) (data.Author, error) {
 func NewClientRepository(address ClientsAddress) ClientRepository {
 	conn, err := grpc.Dial(address.AuthorServiceAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Errorf("could not connect to AuthorService at: %s", address.AuthorServiceAddress)
+		log.Errorf("Could not connect to AuthorService at: %s", address.AuthorServiceAddress)
 		panic(err)
 	}
 	client := pb.NewAuthorServiceClient(conn)

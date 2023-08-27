@@ -20,12 +20,13 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	QuoteService_GetQuote_FullMethodName          = "/quoteservice.QuoteService/GetQuote"
-	QuoteService_ListQuotes_FullMethodName        = "/quoteservice.QuoteService/ListQuotes"
-	QuoteService_CreateQuote_FullMethodName       = "/quoteservice.QuoteService/CreateQuote"
-	QuoteService_UpdateQuote_FullMethodName       = "/quoteservice.QuoteService/UpdateQuote"
-	QuoteService_DeleteQuote_FullMethodName       = "/quoteservice.QuoteService/DeleteQuote"
-	QuoteService_GetQuotesByAuthor_FullMethodName = "/quoteservice.QuoteService/GetQuotesByAuthor"
+	QuoteService_GetQuote_FullMethodName                = "/quoteservice.QuoteService/GetQuote"
+	QuoteService_ListQuotes_FullMethodName              = "/quoteservice.QuoteService/ListQuotes"
+	QuoteService_CreateQuote_FullMethodName             = "/quoteservice.QuoteService/CreateQuote"
+	QuoteService_UpdateQuote_FullMethodName             = "/quoteservice.QuoteService/UpdateQuote"
+	QuoteService_DeleteQuote_FullMethodName             = "/quoteservice.QuoteService/DeleteQuote"
+	QuoteService_GetQuotesByAuthor_FullMethodName       = "/quoteservice.QuoteService/GetQuotesByAuthor"
+	QuoteService_DeleteAllQuotesByAuthor_FullMethodName = "/quoteservice.QuoteService/DeleteAllQuotesByAuthor"
 )
 
 // QuoteServiceClient is the client API for QuoteService service.
@@ -44,6 +45,8 @@ type QuoteServiceClient interface {
 	DeleteQuote(ctx context.Context, in *DeleteQuoteRequest, opts ...grpc.CallOption) (*DeleteQuoteResponse, error)
 	// GetQuoteByAuthor returns a list of quotes by author id
 	GetQuotesByAuthor(ctx context.Context, in *GetQuotesByAuthorRequest, opts ...grpc.CallOption) (*ListQuotesResponse, error)
+	// DeleteAllQuotesByAuthor deletes all quotes by author id
+	DeleteAllQuotesByAuthor(ctx context.Context, in *DeleteQuotesByAuthorRequest, opts ...grpc.CallOption) (*DeleteQuoteResponse, error)
 }
 
 type quoteServiceClient struct {
@@ -108,6 +111,15 @@ func (c *quoteServiceClient) GetQuotesByAuthor(ctx context.Context, in *GetQuote
 	return out, nil
 }
 
+func (c *quoteServiceClient) DeleteAllQuotesByAuthor(ctx context.Context, in *DeleteQuotesByAuthorRequest, opts ...grpc.CallOption) (*DeleteQuoteResponse, error) {
+	out := new(DeleteQuoteResponse)
+	err := c.cc.Invoke(ctx, QuoteService_DeleteAllQuotesByAuthor_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QuoteServiceServer is the server API for QuoteService service.
 // All implementations must embed UnimplementedQuoteServiceServer
 // for forward compatibility
@@ -124,6 +136,8 @@ type QuoteServiceServer interface {
 	DeleteQuote(context.Context, *DeleteQuoteRequest) (*DeleteQuoteResponse, error)
 	// GetQuoteByAuthor returns a list of quotes by author id
 	GetQuotesByAuthor(context.Context, *GetQuotesByAuthorRequest) (*ListQuotesResponse, error)
+	// DeleteAllQuotesByAuthor deletes all quotes by author id
+	DeleteAllQuotesByAuthor(context.Context, *DeleteQuotesByAuthorRequest) (*DeleteQuoteResponse, error)
 	mustEmbedUnimplementedQuoteServiceServer()
 }
 
@@ -148,6 +162,9 @@ func (UnimplementedQuoteServiceServer) DeleteQuote(context.Context, *DeleteQuote
 }
 func (UnimplementedQuoteServiceServer) GetQuotesByAuthor(context.Context, *GetQuotesByAuthorRequest) (*ListQuotesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetQuotesByAuthor not implemented")
+}
+func (UnimplementedQuoteServiceServer) DeleteAllQuotesByAuthor(context.Context, *DeleteQuotesByAuthorRequest) (*DeleteQuoteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteAllQuotesByAuthor not implemented")
 }
 func (UnimplementedQuoteServiceServer) mustEmbedUnimplementedQuoteServiceServer() {}
 
@@ -270,6 +287,24 @@ func _QuoteService_GetQuotesByAuthor_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _QuoteService_DeleteAllQuotesByAuthor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteQuotesByAuthorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QuoteServiceServer).DeleteAllQuotesByAuthor(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: QuoteService_DeleteAllQuotesByAuthor_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QuoteServiceServer).DeleteAllQuotesByAuthor(ctx, req.(*DeleteQuotesByAuthorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // QuoteService_ServiceDesc is the grpc.ServiceDesc for QuoteService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -300,6 +335,10 @@ var QuoteService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetQuotesByAuthor",
 			Handler:    _QuoteService_GetQuotesByAuthor_Handler,
+		},
+		{
+			MethodName: "DeleteAllQuotesByAuthor",
+			Handler:    _QuoteService_DeleteAllQuotesByAuthor_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

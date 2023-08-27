@@ -9,7 +9,7 @@ type inMemoryDatabase struct {
 	storage map[string]data.Quote
 }
 
-func (db inMemoryDatabase) AddQuote(quote data.Quote) (string, error) {
+func (db *inMemoryDatabase) AddQuote(quote data.Quote) (string, error) {
 	if _, ok := db.storage[quote.ID]; ok {
 		return "", fmt.Errorf("quote %q already exist in database", quote.ID)
 	}
@@ -17,7 +17,7 @@ func (db inMemoryDatabase) AddQuote(quote data.Quote) (string, error) {
 	return quote.ID, nil
 }
 
-func (db inMemoryDatabase) ListAll() []data.Quote {
+func (db *inMemoryDatabase) ListAll() []data.Quote {
 	var quotes []data.Quote
 	for _, v := range db.storage {
 		quotes = append(quotes, v)
@@ -25,7 +25,7 @@ func (db inMemoryDatabase) ListAll() []data.Quote {
 	return quotes
 }
 
-func (db inMemoryDatabase) UpdateQuote(quote data.Quote) (data.Quote, error) {
+func (db *inMemoryDatabase) UpdateQuote(quote data.Quote) (data.Quote, error) {
 	if _, ok := db.storage[quote.ID]; !ok {
 		return data.Quote{}, fmt.Errorf("quote %q do not exist in database", quote.ID)
 	}
@@ -33,7 +33,7 @@ func (db inMemoryDatabase) UpdateQuote(quote data.Quote) (data.Quote, error) {
 	return db.storage[quote.ID], nil
 }
 
-func (db inMemoryDatabase) DeleteQuote(id string) error {
+func (db *inMemoryDatabase) DeleteQuote(id string) error {
 	if _, ok := db.storage[id]; !ok {
 		return fmt.Errorf("quote %q do not exist in database", id)
 	}
@@ -41,14 +41,14 @@ func (db inMemoryDatabase) DeleteQuote(id string) error {
 	return nil
 }
 
-func (db inMemoryDatabase) GetQuote(id string) (data.Quote, error) {
+func (db *inMemoryDatabase) GetQuote(id string) (data.Quote, error) {
 	if _, ok := db.storage[id]; !ok {
 		return data.Quote{}, fmt.Errorf("quote %q do not exist in database", id)
 	}
 	return db.storage[id], nil
 }
 
-func (db inMemoryDatabase) GetAuthorQuotes(authorID string) []data.Quote {
+func (db *inMemoryDatabase) GetAuthorQuotes(authorID string) []data.Quote {
 	var quotes []data.Quote
 	for _, v := range db.storage {
 		if v.AuthorID == authorID {
@@ -56,6 +56,15 @@ func (db inMemoryDatabase) GetAuthorQuotes(authorID string) []data.Quote {
 		}
 	}
 	return quotes
+}
+
+func (db *inMemoryDatabase) DeleteAuthorQuotes(authorID string) error {
+	for _, v := range db.storage {
+		if v.AuthorID == authorID {
+			delete(db.storage, v.ID)
+		}
+	}
+	return nil
 }
 
 func NewInMemoryDatabase() Database {

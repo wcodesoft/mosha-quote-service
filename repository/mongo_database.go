@@ -24,7 +24,7 @@ func NewMongoDatabase(connection *mdb.MongoConnection) Database {
 }
 
 // AddQuote adds a new quote to the database.
-func (m mongoDatabase) AddQuote(quote data.Quote) (string, error) {
+func (m *mongoDatabase) AddQuote(quote data.Quote) (string, error) {
 	if quote.Text == "" {
 		panic("Quote text is empty")
 	}
@@ -38,7 +38,7 @@ func (m mongoDatabase) AddQuote(quote data.Quote) (string, error) {
 }
 
 // ListAll returns all quotes from the database.
-func (m mongoDatabase) ListAll() []data.Quote {
+func (m *mongoDatabase) ListAll() []data.Quote {
 	cursor, err := m.coll.Find(context.Background(), bson.D{})
 	if err != nil {
 		return []data.Quote{}
@@ -55,7 +55,7 @@ func (m mongoDatabase) ListAll() []data.Quote {
 }
 
 // UpdateQuote updates a quote in the database.
-func (m mongoDatabase) UpdateQuote(quote data.Quote) (data.Quote, error) {
+func (m *mongoDatabase) UpdateQuote(quote data.Quote) (data.Quote, error) {
 	filter := bson.D{{"_id", quote.ID}}
 	opts := options.Update().SetHint(bson.D{{"_id", 1}})
 	update := bson.D{{"$set", fromQuote(quote)}}
@@ -67,7 +67,7 @@ func (m mongoDatabase) UpdateQuote(quote data.Quote) (data.Quote, error) {
 }
 
 // DeleteQuote deletes a quote from the database.
-func (m mongoDatabase) DeleteQuote(id string) error {
+func (m *mongoDatabase) DeleteQuote(id string) error {
 	filter := bson.D{{"_id", id}}
 	opts := options.Delete().SetHint(bson.D{{"_id", 1}})
 	result, err := m.coll.DeleteOne(context.Background(), filter, opts)
@@ -81,7 +81,7 @@ func (m mongoDatabase) DeleteQuote(id string) error {
 }
 
 // GetQuote returns a quote from the database.
-func (m mongoDatabase) GetQuote(id string) (data.Quote, error) {
+func (m *mongoDatabase) GetQuote(id string) (data.Quote, error) {
 	filter := bson.D{{"_id", id}}
 	opts := options.FindOne().SetHint(bson.D{{"_id", 1}})
 	var result quoteDB
@@ -94,7 +94,7 @@ func (m mongoDatabase) GetQuote(id string) (data.Quote, error) {
 }
 
 // GetAuthorQuotes returns all quotes from an author.
-func (m mongoDatabase) GetAuthorQuotes(authorID string) []data.Quote {
+func (m *mongoDatabase) GetAuthorQuotes(authorID string) []data.Quote {
 	filter := bson.D{{"authorid", authorID}}
 	cursor, err := m.coll.Find(context.Background(), filter)
 	if err != nil {
@@ -109,4 +109,10 @@ func (m mongoDatabase) GetAuthorQuotes(authorID string) []data.Quote {
 		quotes[index] = toQuote(v)
 	}
 	return quotes
+}
+
+func (m *mongoDatabase) DeleteAuthorQuotes(authorID string) error {
+	filter := bson.D{{"authorid", authorID}}
+	_, err := m.coll.DeleteMany(context.Background(), filter)
+	return err
 }

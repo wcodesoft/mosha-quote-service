@@ -49,6 +49,13 @@ func TestRepository(t *testing.T) {
 				So(quotes, ShouldContain, quote)
 				So(len(quotes), ShouldEqual, 1)
 			})
+
+			Convey("Deleting all quotes by author ID should delete the correct quotes", func() {
+				err := repo.DeleteAuthorQuotes("123")
+				So(err, ShouldBeNil)
+				quotes := repo.GetAuthorQuotes("123")
+				So(len(quotes), ShouldEqual, 0)
+			})
 		})
 
 		Convey("When adding a quote with an invalid author ID", func() {
@@ -77,5 +84,6 @@ func TestRepository(t *testing.T) {
 				So(err, ShouldNotBeNil)
 			})
 		})
+
 	})
 }

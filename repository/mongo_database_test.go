@@ -60,8 +60,8 @@ func TestMongoDB(t *testing.T) {
 				mtest.FirstBatch,
 				createMockedQuote(id, text, timestamp, authorId),
 			)
-			killCursors := mtest.CreateCursorResponse(0, "mosha.quotes", mtest.NextBatch)
-			mt.AddMockResponses(mockFind, killCursors)
+			getCursors := mtest.CreateCursorResponse(0, "mosha.quotes", mtest.NextBatch)
+			mt.AddMockResponses(mockFind, getCursors)
 
 			Convey("Test GetQuote correctly", mt, func() {
 				quote, err := db.GetQuote(id)
@@ -150,8 +150,8 @@ func TestMongoDB(t *testing.T) {
 					createMockedQuote(otherId, otherText, otherTimestamp, authorId),
 				)
 
-				killCursors := mtest.CreateCursorResponse(0, "mosha.quotes", mtest.NextBatch)
-				mt.AddMockResponses(first, second, killCursors)
+				getCursors := mtest.CreateCursorResponse(0, "mosha.quotes", mtest.NextBatch)
+				mt.AddMockResponses(first, second, getCursors)
 				quotes := db.ListAll()
 				So(len(quotes), ShouldEqual, 2)
 			})
@@ -186,8 +186,8 @@ func TestMongoDB(t *testing.T) {
 					createMockedQuote(otherId, otherText, otherTimestamp, authorId),
 				)
 
-				killCursors := mtest.CreateCursorResponse(0, "mosha.quotes", mtest.NextBatch)
-				mt.AddMockResponses(first, second, killCursors)
+				getCursors := mtest.CreateCursorResponse(0, "mosha.quotes", mtest.NextBatch)
+				mt.AddMockResponses(first, second, getCursors)
 				quotes := db.GetAuthorQuotes(authorId)
 				So(len(quotes), ShouldEqual, 2)
 			})
@@ -196,6 +196,39 @@ func TestMongoDB(t *testing.T) {
 				mt.AddMockResponses(bson.D{{Key: "ok", Value: 0}})
 				quotes := db.GetAuthorQuotes(authorId)
 				So(len(quotes), ShouldEqual, 0)
+			})
+		})
+
+		mt.Run("Test DeleteAuthorQuotes", func(mt *mtest.T) {
+			conn := mdb.NewMongoConnection(mt.Client, databaseName, "quote")
+			db := NewMongoDatabase(conn)
+
+			Convey("Test DeleteAuthorQuotes correctly", mt, func() {
+				otherText := faker.Phrase()
+				otherTimestamp := faker.Date().Unix()
+				otherId := faker.UUID()
+
+				first := mtest.CreateCursorResponse(
+					1,
+					"mosha.quotes",
+					mtest.FirstBatch,
+					createMockedQuote(id, text, timestamp, authorId),
+				)
+
+				second := mtest.CreateCursorResponse(
+					1,
+					"mosha.quotes",
+					mtest.NextBatch,
+					createMockedQuote(otherId, otherText, otherTimestamp, authorId),
+				)
+
+				getCursors := mtest.CreateCursorResponse(0, "mosha.quotes", mtest.NextBatch)
+				deleteResponse := mtest.CreateSuccessResponse()
+				mt.AddMockResponses(first, second, getCursors, deleteResponse)
+				quotes := db.GetAuthorQuotes(authorId)
+				So(len(quotes), ShouldEqual, 2)
+				err := db.DeleteAuthorQuotes(authorId)
+				So(err, ShouldBeNil)
 			})
 		})
 	})

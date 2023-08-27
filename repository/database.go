@@ -21,6 +21,9 @@ type Database interface {
 
 	// GetAuthorQuotes returns all quotes from an author.
 	GetAuthorQuotes(authorID string) []data.Quote
+
+	// DeleteAuthorQuotes deletes all quotes from an author.
+	DeleteAuthorQuotes(authorID string) error
 }
 
 type quoteDB struct {

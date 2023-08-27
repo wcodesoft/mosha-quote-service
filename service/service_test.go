@@ -96,5 +96,15 @@ func TestService(t *testing.T) {
 			})
 		})
 
+		Convey("When deleting all quotes by author", func() {
+			_, _ = service.CreateQuote(quote)
+			err := service.DeleteAuthorQuotes(authorId)
+			Convey("The list of quotes should be empty", func() {
+				So(len(service.ListAll()), ShouldEqual, 0)
+			})
+			Convey("Deleting the quotes should not return an error", func() {
+				So(err, ShouldBeNil)
+			})
+		})
 	})
 }

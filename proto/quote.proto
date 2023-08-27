@@ -19,6 +19,8 @@ service QuoteService {
   rpc DeleteQuote(DeleteQuoteRequest) returns (DeleteQuoteResponse) {}
   // GetQuoteByAuthor returns a list of quotes by author id
   rpc GetQuotesByAuthor(GetQuotesByAuthorRequest) returns (ListQuotesResponse) {}
+  // DeleteAllQuotesByAuthor deletes all quotes by author id
+  rpc DeleteAllQuotesByAuthor(DeleteQuotesByAuthorRequest) returns (DeleteQuoteResponse) {}
 }
 
 // The Quote message
@@ -51,6 +53,10 @@ message DeleteQuoteRequest {
 
 // The GetQuoteByAuthorRequest message
 message GetQuotesByAuthorRequest {
+  string author_id = 1;
+}
+
+message DeleteQuotesByAuthorRequest {
   string author_id = 1;
 }
 

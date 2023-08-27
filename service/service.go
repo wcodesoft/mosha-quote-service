@@ -24,6 +24,8 @@ type Service interface {
 
 	// GetAuthorQuotes returns all quotes from an author.
 	GetAuthorQuotes(authorID string) []data.Quote
+
+	DeleteAuthorQuotes(authorID string) error
 }
 
 type service struct {
@@ -64,4 +66,8 @@ func (s *service) GetQuote(id string) (data.Quote, error) {
 // GetAuthorQuotes returns all quotes from an author.
 func (s *service) GetAuthorQuotes(authorID string) []data.Quote {
 	return s.repo.GetAuthorQuotes(authorID)
+}
+
+func (s *service) DeleteAuthorQuotes(authorID string) error {
+	return s.repo.DeleteAuthorQuotes(authorID)
 }
