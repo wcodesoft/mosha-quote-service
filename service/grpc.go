@@ -107,7 +107,7 @@ func (s *server) GetQuotesByAuthor(_ context.Context, request *pb.GetQuotesByAut
 
 func (s *server) DeleteAllQuotesByAuthor(_ context.Context, request *pb.DeleteQuotesByAuthorRequest) (*pb.DeleteQuoteResponse, error) {
 	err := s.service.DeleteAuthorQuotes(request.AuthorId)
-	return &pb.DeleteQuoteResponse{Success: err != nil}, err
+	return &pb.DeleteQuoteResponse{Success: err == nil}, err
 }
 
 func (g GrpcRouter) Start(port string) error {
