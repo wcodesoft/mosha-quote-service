@@ -21,6 +21,9 @@ type Repository interface {
 
 	// GetAuthorQuotes returns all quotes from an author.
 	GetAuthorQuotes(authorID string) []data.Quote
+
+	// DeleteAuthorQuotes deletes all quotes from an author.
+	DeleteAuthorQuotes(authorID string) error
 }
 
 type repository struct {
@@ -36,38 +39,42 @@ func New(db Database, clientRepository ClientRepository) Repository {
 	}
 }
 
-func (s repository) authorExist(authorId string) error {
-	_, err := s.clientRepository.GetAuthor(authorId)
+func (r *repository) authorExist(authorId string) error {
+	_, err := r.clientRepository.GetAuthor(authorId)
 	return err
 }
 
 // AddQuote adds a new quote to the database.
-func (s repository) AddQuote(quote data.Quote) (string, error) {
-	if err := s.authorExist(quote.AuthorID); err != nil {
+func (r *repository) AddQuote(quote data.Quote) (string, error) {
+	if err := r.authorExist(quote.AuthorID); err != nil {
 		return "", err
 	}
-	return s.db.AddQuote(quote)
+	return r.db.AddQuote(quote)
 }
 
-func (s repository) ListAll() []data.Quote {
-	return s.db.ListAll()
+func (r *repository) ListAll() []data.Quote {
+	return r.db.ListAll()
 }
 
-func (s repository) UpdateQuote(quote data.Quote) (data.Quote, error) {
-	if err := s.authorExist(quote.AuthorID); err != nil {
+func (r *repository) UpdateQuote(quote data.Quote) (data.Quote, error) {
+	if err := r.authorExist(quote.AuthorID); err != nil {
 		return data.Quote{}, err
 	}
-	return s.db.UpdateQuote(quote)
+	return r.db.UpdateQuote(quote)
 }
 
-func (s repository) DeleteQuote(id string) error {
-	return s.db.DeleteQuote(id)
+func (r *repository) DeleteQuote(id string) error {
+	return r.db.DeleteQuote(id)
 }
 
-func (s repository) GetQuote(id string) (data.Quote, error) {
-	return s.db.GetQuote(id)
+func (r *repository) GetQuote(id string) (data.Quote, error) {
+	return r.db.GetQuote(id)
 }
 
-func (s repository) GetAuthorQuotes(authorID string) []data.Quote {
-	return s.db.GetAuthorQuotes(authorID)
+func (r *repository) GetAuthorQuotes(authorID string) []data.Quote {
+	return r.db.GetAuthorQuotes(authorID)
+}
+
+func (r *repository) DeleteAuthorQuotes(authorID string) error {
+	return r.db.DeleteAuthorQuotes(authorID)
 }

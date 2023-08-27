@@ -42,7 +42,7 @@ func NewGrpcRouter(s Service, serviceName string) GrpcRouter {
 		serviceName: serviceName}
 }
 
-func (s server) CreateQuote(_ context.Context, req *pb.CreateQuoteRequest) (*pb.Quote, error) {
+func (s *server) CreateQuote(_ context.Context, req *pb.CreateQuoteRequest) (*pb.Quote, error) {
 	quote := req.GetQuote()
 	if quote == nil {
 		return nil, fmt.Errorf("quote is nil")
@@ -58,7 +58,8 @@ func (s server) CreateQuote(_ context.Context, req *pb.CreateQuoteRequest) (*pb.
 		Timestamp: quote.Timestamp,
 	}, nil
 }
-func (s server) GetQuote(_ context.Context, req *pb.GetQuoteRequest) (*pb.Quote, error) {
+
+func (s *server) GetQuote(_ context.Context, req *pb.GetQuoteRequest) (*pb.Quote, error) {
 	quote, err := s.service.GetQuote(req.Id)
 	if err != nil {
 		return nil, err
@@ -66,7 +67,7 @@ func (s server) GetQuote(_ context.Context, req *pb.GetQuoteRequest) (*pb.Quote,
 	return toProtoQuote(quote), nil
 }
 
-func (s server) UpdateQuote(_ context.Context, req *pb.UpdateQuoteRequest) (*pb.Quote, error) {
+func (s *server) UpdateQuote(_ context.Context, req *pb.UpdateQuoteRequest) (*pb.Quote, error) {
 	quote := req.GetQuote()
 	if quote == nil {
 		return nil, fmt.Errorf("quote is nil")
@@ -78,7 +79,7 @@ func (s server) UpdateQuote(_ context.Context, req *pb.UpdateQuoteRequest) (*pb.
 	return toProtoQuote(updatedQuote), nil
 }
 
-func (s server) ListQuotes(_ context.Context, _ *emptypb.Empty) (*pb.ListQuotesResponse, error) {
+func (s *server) ListQuotes(_ context.Context, _ *emptypb.Empty) (*pb.ListQuotesResponse, error) {
 	quotes := s.service.ListAll()
 	var pbQuotes []*pb.Quote
 	for _, quote := range quotes {
@@ -87,7 +88,7 @@ func (s server) ListQuotes(_ context.Context, _ *emptypb.Empty) (*pb.ListQuotesR
 	return &pb.ListQuotesResponse{Quotes: pbQuotes}, nil
 }
 
-func (s server) DeleteQuote(_ context.Context, request *pb.DeleteQuoteRequest) (*pb.DeleteQuoteResponse, error) {
+func (s *server) DeleteQuote(_ context.Context, request *pb.DeleteQuoteRequest) (*pb.DeleteQuoteResponse, error) {
 	err := s.service.DeleteQuote(request.Id)
 	if err != nil {
 		return nil, err
@@ -95,13 +96,18 @@ func (s server) DeleteQuote(_ context.Context, request *pb.DeleteQuoteRequest) (
 	return &pb.DeleteQuoteResponse{Success: true}, nil
 }
 
-func (s server) GetQuotesByAuthor(_ context.Context, request *pb.GetQuotesByAuthorRequest) (*pb.ListQuotesResponse, error) {
+func (s *server) GetQuotesByAuthor(_ context.Context, request *pb.GetQuotesByAuthorRequest) (*pb.ListQuotesResponse, error) {
 	quotes := s.service.GetAuthorQuotes(request.AuthorId)
 	var pbQuotes []*pb.Quote
 	for _, quote := range quotes {
 		pbQuotes = append(pbQuotes, toProtoQuote(quote))
 	}
 	return &pb.ListQuotesResponse{Quotes: pbQuotes}, nil
+}
+
+func (s *server) DeleteAllQuotesByAuthor(_ context.Context, request *pb.DeleteQuotesByAuthorRequest) (*pb.DeleteQuoteResponse, error) {
+	err := s.service.DeleteAuthorQuotes(request.AuthorId)
+	return &pb.DeleteQuoteResponse{Success: err == nil}, err
 }
 
 func (g GrpcRouter) Start(port string) error {

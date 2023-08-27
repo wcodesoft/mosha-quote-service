@@ -153,6 +153,28 @@ func TestGrpc(t *testing.T) {
 				So(len(res.Quotes), ShouldEqual, 0)
 			})
 		})
+
+		Convey("When deleting all quotes by author", func() {
+			res, err := router.server.DeleteAllQuotesByAuthor(context.Background(),
+				&pb.DeleteQuotesByAuthorRequest{AuthorId: authorId},
+			)
+			Convey("The response should not be nil", func() {
+				So(res, ShouldNotBeNil)
+			})
+			Convey("The error should be nil", func() {
+				So(err, ShouldBeNil)
+			})
+			Convey("The response should be true", func() {
+				So(res.Success, ShouldEqual, true)
+			})
+			Convey("Listing quotes of author should be empty", func() {
+				res, err := router.server.GetQuotesByAuthor(context.Background(), &pb.GetQuotesByAuthorRequest{
+					AuthorId: authorId,
+				})
+				So(len(res.Quotes), ShouldEqual, 0)
+				So(err, ShouldBeNil)
+			})
+		})
 	})
 
 	Convey("When database is empty", t, func() {
