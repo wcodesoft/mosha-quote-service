@@ -24,6 +24,9 @@ type Database interface {
 
 	// DeleteAuthorQuotes deletes all quotes from an author.
 	DeleteAuthorQuotes(authorID string) error
+
+	// GetRandomQuote returns a random quote from the database.
+	GetRandomQuote() (data.Quote, error)
 }
 
 type quoteDB struct {

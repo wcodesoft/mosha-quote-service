@@ -231,5 +231,23 @@ func TestMongoDB(t *testing.T) {
 				So(err, ShouldBeNil)
 			})
 		})
+
+		mt.Run("Test GetRandomQuote", func(mt *mtest.T) {
+			conn := mdb.NewMongoConnection(mt.Client, databaseName, "quote")
+			db := NewMongoDatabase(conn)
+			mockFind := mtest.CreateCursorResponse(
+				1,
+				"mosha.quotes",
+				mtest.FirstBatch,
+				createMockedQuote(id, text, timestamp, authorId),
+			)
+			getCursors := mtest.CreateCursorResponse(0, "mosha.quotes", mtest.NextBatch)
+			mt.AddMockResponses(mockFind, getCursors)
+			Convey("Test GetRandomQuote correctly", mt, func() {
+				quote, err := db.GetRandomQuote()
+				So(err, ShouldBeNil)
+				So(quote.ID, ShouldEqual, id)
+			})
+		})
 	})
 }

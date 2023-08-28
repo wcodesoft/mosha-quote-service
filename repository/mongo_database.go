@@ -116,3 +116,21 @@ func (m *mongoDatabase) DeleteAuthorQuotes(authorID string) error {
 	_, err := m.coll.DeleteMany(context.Background(), filter)
 	return err
 }
+
+func (m *mongoDatabase) GetRandomQuote() (data.Quote, error) {
+	opts := options.Aggregate().SetMaxAwaitTime(1000)
+	cursor, err := m.coll.Aggregate(context.Background(), mongo.Pipeline{
+		bson.D{{Key: "$sample", Value: bson.D{{Key: "size", Value: 1}}}},
+	}, opts)
+	if err != nil {
+		return data.Quote{}, err
+	}
+	var results []quoteDB
+	if err = cursor.All(context.Background(), &results); err != nil {
+		panic(err)
+	}
+	if len(results) == 0 {
+		return data.Quote{}, fmt.Errorf("no quote found")
+	}
+	return toQuote(results[0]), nil
+}

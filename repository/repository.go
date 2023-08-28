@@ -24,6 +24,9 @@ type Repository interface {
 
 	// DeleteAuthorQuotes deletes all quotes from an author.
 	DeleteAuthorQuotes(authorID string) error
+
+	// GetRandomQuote returns a random quote from the database.
+	GetRandomQuote() (data.Quote, error)
 }
 
 type repository struct {
@@ -77,4 +80,8 @@ func (r *repository) GetAuthorQuotes(authorID string) []data.Quote {
 
 func (r *repository) DeleteAuthorQuotes(authorID string) error {
 	return r.db.DeleteAuthorQuotes(authorID)
+}
+
+func (r *repository) GetRandomQuote() (data.Quote, error) {
+	return r.db.GetRandomQuote()
 }

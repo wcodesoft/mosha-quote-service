@@ -56,6 +56,12 @@ func TestRepository(t *testing.T) {
 				quotes := repo.GetAuthorQuotes("123")
 				So(len(quotes), ShouldEqual, 0)
 			})
+
+			Convey("Getting a random quote should return a quote", func() {
+				quote, err := repo.GetRandomQuote()
+				So(err, ShouldBeNil)
+				So(quote, ShouldNotBeNil)
+			})
 		})
 
 		Convey("When adding a quote with an invalid author ID", func() {
