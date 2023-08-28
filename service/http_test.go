@@ -202,5 +202,30 @@ func TestHttp(t *testing.T) {
 				So(len(quoteResponse), ShouldEqual, 1)
 			})
 		})
+
+		Convey("When getting a random quote", func() {
+			getReq := httptest.NewRequest("GET", "/api/v1/quote/random", nil)
+			getRr := executeRequest(getReq, handler)
+
+			Convey("The response should be 200", func() {
+				So(getRr.Code, ShouldEqual, http.StatusOK)
+			})
+
+			Convey("The response should contain the correct ID", func() {
+				var quoteResponse data.Quote
+				_ = json.NewDecoder(getRr.Body).Decode(&quoteResponse)
+				So(quoteResponse.ID, ShouldEqual, quote.ID)
+			})
+		})
+	})
+
+	Convey("When getting a random quote without any quote", t, func() {
+		handler := createHandler()
+		getReq := httptest.NewRequest("GET", "/api/v1/quote/random", nil)
+		getRr := executeRequest(getReq, handler)
+
+		Convey("The response should be 500", func() {
+			So(getRr.Code, ShouldEqual, http.StatusInternalServerError)
+		})
 	})
 }

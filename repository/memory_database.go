@@ -3,6 +3,7 @@ package repository
 import (
 	"fmt"
 	"github.com/wcodesoft/mosha-quote-service/data"
+	"math/rand"
 )
 
 type inMemoryDatabase struct {
@@ -65,6 +66,18 @@ func (db *inMemoryDatabase) DeleteAuthorQuotes(authorID string) error {
 		}
 	}
 	return nil
+}
+
+func (db *inMemoryDatabase) GetRandomQuote() (data.Quote, error) {
+	var quotes []data.Quote
+	for _, v := range db.storage {
+		quotes = append(quotes, v)
+	}
+
+	if len(quotes) == 0 {
+		return data.Quote{}, fmt.Errorf("no quotes in database")
+	}
+	return quotes[rand.Intn(len(quotes))], nil
 }
 
 func NewInMemoryDatabase() Database {

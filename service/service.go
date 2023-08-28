@@ -25,7 +25,11 @@ type Service interface {
 	// GetAuthorQuotes returns all quotes from an author.
 	GetAuthorQuotes(authorID string) []data.Quote
 
+	// DeleteAuthorQuotes deletes all quotes from an author.
 	DeleteAuthorQuotes(authorID string) error
+
+	// GetRandomQuote returns a random quote from the database.
+	GetRandomQuote() (data.Quote, error)
 }
 
 type service struct {
@@ -70,4 +74,8 @@ func (s *service) GetAuthorQuotes(authorID string) []data.Quote {
 
 func (s *service) DeleteAuthorQuotes(authorID string) error {
 	return s.repo.DeleteAuthorQuotes(authorID)
+}
+
+func (s *service) GetRandomQuote() (data.Quote, error) {
+	return s.repo.GetRandomQuote()
 }

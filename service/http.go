@@ -35,6 +35,7 @@ func (qs *QuoteService) MakeHandler() http.Handler {
 	r.Get("/api/v1/quote/all", qs.listAllHandler)
 	r.Get("/api/v1/quote/author/{authorId}", qs.listByAuthorHandler)
 	r.Get("/api/v1/quote/{id}", qs.getQuoteHandler)
+	r.Get("/api/v1/quote/random", qs.getRandomQuoteHandler)
 	return r
 }
 
@@ -103,5 +104,15 @@ func (qs *QuoteService) updateQuoteHandler(w http.ResponseWriter, r *http.Reques
 		mhttp.EncodeError(w, err)
 		return
 	}
+	mhttp.EncodeResponse(w, result)
+}
+
+func (qs *QuoteService) getRandomQuoteHandler(w http.ResponseWriter, _ *http.Request) {
+	result, err := qs.Service.GetRandomQuote()
+	if err != nil {
+		mhttp.EncodeError(w, err)
+		return
+	}
+
 	mhttp.EncodeResponse(w, result)
 }
