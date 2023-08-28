@@ -218,4 +218,14 @@ func TestHttp(t *testing.T) {
 			})
 		})
 	})
+
+	Convey("When getting a random quote without any quote", t, func() {
+		handler := createHandler()
+		getReq := httptest.NewRequest("GET", "/api/v1/quote/random", nil)
+		getRr := executeRequest(getReq, handler)
+
+		Convey("The response should be 500", func() {
+			So(getRr.Code, ShouldEqual, http.StatusInternalServerError)
+		})
+	})
 }
