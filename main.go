@@ -44,7 +44,7 @@ func main() {
 	}
 
 	if err := tracing.SetupSentry(sentryDsn, releaseVersion, QuoteServiceName, sentrySampleRate); err != nil {
-		log.Errorf("unable to setup sentry: ", err)
+		log.Error("unable to setup sentry: ", err)
 	}
 
 	clientsRepository := repository.NewClientRepository(repository.ClientsAddress{
