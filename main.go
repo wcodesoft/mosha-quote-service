@@ -6,17 +6,20 @@ import (
 	"github.com/wcodesoft/mosha-quote-service/service"
 	mdb "github.com/wcodesoft/mosha-service-common/database"
 	mhttp "github.com/wcodesoft/mosha-service-common/http"
+	"github.com/wcodesoft/mosha-service-common/tracing"
 	"os"
+	"strconv"
 	"sync"
 )
 
 const (
-	defaultHttpPort   = "8280"
-	defaultGrpcPort   = "8281"
-	QuoteServiceName  = "QuoteService"
-	defaultMongoHost  = "mongodb://localhost:27017"
-	defaultDatabase   = "mosha"
-	authorGrpcAddress = "localhost:8181"
+	defaultHttpPort       = "8280"
+	defaultGrpcPort       = "8281"
+	QuoteServiceName      = "QuoteService"
+	defaultMongoHost      = "mongodb://localhost:27017"
+	defaultDatabase       = "mosha"
+	authorGrpcAddress     = "localhost:8181"
+	defaultReleaseVersion = "dev"
 )
 
 func getEnv(key, fallback string) string {
@@ -28,10 +31,21 @@ func getEnv(key, fallback string) string {
 
 func main() {
 	log.Printf("Starting %s", QuoteServiceName)
-	httpPort := getEnv("COMPONENT_PORT", defaultHttpPort)
+	httpPort := getEnv("HTTP_PORT", defaultHttpPort)
 	mongoHost := getEnv("MONGO_DB_HOST", defaultMongoHost)
 	authorServiceAddress := getEnv("AUTHOR_SERVICE_ADDRESS", authorGrpcAddress)
 	grpcPort := getEnv("GRPC_PORT", defaultGrpcPort)
+	releaseVersion := getEnv("RELEASE_VERSION", defaultReleaseVersion)
+
+	sentryDsn := getEnv("SENTRY_DSN", "__DSN__")
+	sentrySampleRate, err := strconv.ParseFloat(getEnv("SENTRY_SAMPLE_RATE", "1.0"), 64)
+	if err != nil {
+		sentrySampleRate = 1.0
+	}
+
+	if err := tracing.SetupSentry(sentryDsn, releaseVersion, QuoteServiceName, sentrySampleRate); err != nil {
+		log.Error("unable to setup sentry: ", err)
+	}
 
 	clientsRepository := repository.NewClientRepository(repository.ClientsAddress{
 		AuthorServiceAddress: authorServiceAddress,

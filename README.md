@@ -27,3 +27,12 @@ After that to run the container, run:
 ```bash
 docker run --name mosha-quote-service -e MONGO_DB_HOST="mongodb://localhost:27017" --net=bridge -p 8180:8180 -d mosha-quote-service
 ```
+
+## Sentry
+
+This service uses Sentry to track errors. To test it locally set the environment variable `SENTRY_DSN` to your Sentry 
+DSN before running the service.
+
+```bash
+export SENTRY_DSN="your-dsn"
+```
