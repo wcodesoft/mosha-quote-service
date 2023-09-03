@@ -6,8 +6,8 @@ import (
 
 	faker "github.com/brianvoe/gofakeit/v6"
 	. "github.com/smartystreets/goconvey/convey"
-	pb "github.com/wcodesoft/mosha-quote-service/proto"
 	"github.com/wcodesoft/mosha-quote-service/repository"
+	pb "github.com/wcodesoft/mosha-service-common/protos/quoteservice"
 	"testing"
 	"time"
 )
