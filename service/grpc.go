@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/wcodesoft/mosha-quote-service/data"
-	pb "github.com/wcodesoft/mosha-quote-service/proto"
 	"github.com/wcodesoft/mosha-service-common/grpc"
+	pb "github.com/wcodesoft/mosha-service-common/protos/quoteservice"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"net"
 )

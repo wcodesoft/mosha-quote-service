@@ -28,16 +28,6 @@ After that to run the container, run:
 docker run --name mosha-quote-service -e MONGO_DB_HOST="mongodb://localhost:27017" --net=bridge -p 8180:8180 -d mosha-quote-service
 ```
 
-## gRPC
-
-The communication between services is done using gRPC. To regenerate the gRPC code, run:
-
-```bash
-protoc --go_out=. --go_opt=paths=source_relative \
-  --go-grpc_out=. --go-grpc_opt=paths=source_relative \
-  proto/quote.proto
-```
-
 ## Sentry
 
 This service uses Sentry to track errors. To test it locally set the environment variable `SENTRY_DSN` to your Sentry 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/charmbracelet/log"
 	"github.com/wcodesoft/mosha-author-service/data"
-	pb "github.com/wcodesoft/mosha-author-service/proto"
+	pb "github.com/wcodesoft/mosha-service-common/protos/authorservice"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
