@@ -1,12 +1,11 @@
 package service
 
 import (
-	"bytes"
 	"encoding/json"
 	faker "github.com/brianvoe/gofakeit/v6"
 	"github.com/wcodesoft/mosha-quote-service/data"
 	mhttp "github.com/wcodesoft/mosha-service-common/http"
-	"io"
+	moshat "github.com/wcodesoft/mosha-service-common/test"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -29,18 +28,6 @@ func createHandler() http.Handler {
 	return handler
 }
 
-func executeRequest(req *http.Request, handler http.Handler) *httptest.ResponseRecorder {
-	rr := httptest.NewRecorder()
-	handler.ServeHTTP(rr, req)
-	return rr
-}
-
-func jsonReaderFactory(in interface{}) io.Reader {
-	buf := bytes.NewBuffer(nil)
-	_ = json.NewEncoder(buf).Encode(in)
-	return buf
-}
-
 func TestHttp(t *testing.T) {
 
 	authorId := "123"
@@ -48,8 +35,8 @@ func TestHttp(t *testing.T) {
 	Convey("When adding a valid quote", t, func() {
 		quote := data.NewQuoteBuilder().WithId(faker.UUID()).WithAuthorId(authorId).WithText(faker.Sentence(10)).Build()
 		handler := createHandler()
-		req := httptest.NewRequest("POST", "/api/v1/quote", jsonReaderFactory(quote))
-		rr := executeRequest(req, handler)
+		req := httptest.NewRequest("POST", "/api/v1/quote", moshat.JsonReaderFactory(quote))
+		rr := moshat.ExecuteRequest(req, handler)
 
 		Convey("The response should be 200", func() {
 			So(rr.Code, ShouldEqual, http.StatusOK)
@@ -67,23 +54,23 @@ func TestHttp(t *testing.T) {
 		quote := data.NewQuoteBuilder().WithId(faker.UUID()).WithAuthorId(authorId).WithText(faker.Sentence(10)).Build()
 
 		Convey("When quote already exists the response should be 500", func() {
-			req1 := httptest.NewRequest("POST", "/api/v1/quote", jsonReaderFactory(quote))
-			executeRequest(req1, handler)
-			req2 := httptest.NewRequest("POST", "/api/v1/quote", jsonReaderFactory(quote))
-			rr := executeRequest(req2, handler)
+			req1 := httptest.NewRequest("POST", "/api/v1/quote", moshat.JsonReaderFactory(quote))
+			moshat.ExecuteRequest(req1, handler)
+			req2 := httptest.NewRequest("POST", "/api/v1/quote", moshat.JsonReaderFactory(quote))
+			rr := moshat.ExecuteRequest(req2, handler)
 			So(rr.Code, ShouldEqual, http.StatusInternalServerError)
 		})
 
 		Convey("When author does not exist the response should be 500", func() {
 			quote.AuthorID = "invalid"
-			req := httptest.NewRequest("POST", "/api/v1/quote", jsonReaderFactory(quote))
-			rr := executeRequest(req, handler)
+			req := httptest.NewRequest("POST", "/api/v1/quote", moshat.JsonReaderFactory(quote))
+			rr := moshat.ExecuteRequest(req, handler)
 			So(rr.Code, ShouldEqual, http.StatusInternalServerError)
 		})
 
 		Convey("When quote is invalid the response should be 500", func() {
-			req := httptest.NewRequest("POST", "/api/v1/quote", jsonReaderFactory("invalid"))
-			rr := executeRequest(req, handler)
+			req := httptest.NewRequest("POST", "/api/v1/quote", moshat.JsonReaderFactory("invalid"))
+			rr := moshat.ExecuteRequest(req, handler)
 			So(rr.Code, ShouldEqual, http.StatusInternalServerError)
 		})
 
@@ -92,8 +79,8 @@ func TestHttp(t *testing.T) {
 	Convey("With a quote in the database", t, func() {
 		quote := data.NewQuoteBuilder().WithId(faker.UUID()).WithAuthorId(authorId).WithText(faker.Sentence(10)).Build()
 		handler := createHandler()
-		req := httptest.NewRequest("POST", "/api/v1/quote", jsonReaderFactory(quote))
-		rr := executeRequest(req, handler)
+		req := httptest.NewRequest("POST", "/api/v1/quote", moshat.JsonReaderFactory(quote))
+		rr := moshat.ExecuteRequest(req, handler)
 
 		Convey("The response should be 200", func() {
 			So(rr.Code, ShouldEqual, http.StatusOK)
@@ -101,7 +88,7 @@ func TestHttp(t *testing.T) {
 
 		Convey("When getting the quote", func() {
 			getReq := httptest.NewRequest("GET", "/api/v1/quote/"+quote.ID, nil)
-			getRr := executeRequest(getReq, handler)
+			getRr := moshat.ExecuteRequest(getReq, handler)
 
 			Convey("The response should be 200", func() {
 				So(getRr.Code, ShouldEqual, http.StatusOK)
@@ -115,7 +102,7 @@ func TestHttp(t *testing.T) {
 
 			Convey("When getting a quote that does not exist", func() {
 				getReq := httptest.NewRequest("GET", "/api/v1/quote/456", nil)
-				getRr := executeRequest(getReq, handler)
+				getRr := moshat.ExecuteRequest(getReq, handler)
 
 				Convey("The response should be 500", func() {
 					So(getRr.Code, ShouldEqual, http.StatusInternalServerError)
@@ -125,8 +112,8 @@ func TestHttp(t *testing.T) {
 
 		Convey("When updating the quote", func() {
 			quote.Text = faker.Sentence(10)
-			updateReq := httptest.NewRequest("POST", "/api/v1/quote/update", jsonReaderFactory(quote))
-			updateRr := executeRequest(updateReq, handler)
+			updateReq := httptest.NewRequest("POST", "/api/v1/quote/update", moshat.JsonReaderFactory(quote))
+			updateRr := moshat.ExecuteRequest(updateReq, handler)
 
 			Convey("The response should be 200", func() {
 				So(updateRr.Code, ShouldEqual, http.StatusOK)
@@ -140,8 +127,8 @@ func TestHttp(t *testing.T) {
 
 			Convey("When updating a quote that does not exist", func() {
 				quote.ID = "456"
-				updateReq := httptest.NewRequest("POST", "/api/v1/quote/update", jsonReaderFactory(quote))
-				updateRr := executeRequest(updateReq, handler)
+				updateReq := httptest.NewRequest("POST", "/api/v1/quote/update", moshat.JsonReaderFactory(quote))
+				updateRr := moshat.ExecuteRequest(updateReq, handler)
 
 				Convey("The response should be 500", func() {
 					So(updateRr.Code, ShouldEqual, http.StatusInternalServerError)
@@ -151,7 +138,7 @@ func TestHttp(t *testing.T) {
 
 		Convey("When deleting the quote", func() {
 			deleteReq := httptest.NewRequest("POST", "/api/v1/quote/delete/"+quote.ID, nil)
-			deleteRr := executeRequest(deleteReq, handler)
+			deleteRr := moshat.ExecuteRequest(deleteReq, handler)
 
 			Convey("The response should be 200", func() {
 				So(deleteRr.Code, ShouldEqual, http.StatusOK)
@@ -165,7 +152,7 @@ func TestHttp(t *testing.T) {
 
 			Convey("When deleting a quote that does not exist", func() {
 				deleteReq := httptest.NewRequest("POST", "/api/v1/quote/delete/456", nil)
-				deleteRr := executeRequest(deleteReq, handler)
+				deleteRr := moshat.ExecuteRequest(deleteReq, handler)
 
 				Convey("The response should be 500", func() {
 					So(deleteRr.Code, ShouldEqual, http.StatusInternalServerError)
@@ -175,7 +162,7 @@ func TestHttp(t *testing.T) {
 
 		Convey("When listing all quotes", func() {
 			listReq := httptest.NewRequest("GET", "/api/v1/quote/all", nil)
-			listRr := executeRequest(listReq, handler)
+			listRr := moshat.ExecuteRequest(listReq, handler)
 
 			Convey("The response should be 200", func() {
 				So(listRr.Code, ShouldEqual, http.StatusOK)
@@ -190,7 +177,7 @@ func TestHttp(t *testing.T) {
 
 		Convey("When listing quotes by author", func() {
 			listReq := httptest.NewRequest("GET", "/api/v1/quote/author/"+authorId, nil)
-			listRr := executeRequest(listReq, handler)
+			listRr := moshat.ExecuteRequest(listReq, handler)
 
 			Convey("The response should be 200", func() {
 				So(listRr.Code, ShouldEqual, http.StatusOK)
@@ -205,7 +192,7 @@ func TestHttp(t *testing.T) {
 
 		Convey("When getting a random quote", func() {
 			getReq := httptest.NewRequest("GET", "/api/v1/quote/random", nil)
-			getRr := executeRequest(getReq, handler)
+			getRr := moshat.ExecuteRequest(getReq, handler)
 
 			Convey("The response should be 200", func() {
 				So(getRr.Code, ShouldEqual, http.StatusOK)
@@ -222,7 +209,7 @@ func TestHttp(t *testing.T) {
 	Convey("When getting a random quote without any quote", t, func() {
 		handler := createHandler()
 		getReq := httptest.NewRequest("GET", "/api/v1/quote/random", nil)
-		getRr := executeRequest(getReq, handler)
+		getRr := moshat.ExecuteRequest(getReq, handler)
 
 		Convey("The response should be 500", func() {
 			So(getRr.Code, ShouldEqual, http.StatusInternalServerError)

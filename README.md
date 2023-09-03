@@ -37,3 +37,12 @@ protoc --go_out=. --go_opt=paths=source_relative \
   --go-grpc_out=. --go-grpc_opt=paths=source_relative \
   proto/quote.proto
 ```
+
+## Sentry
+
+This service uses Sentry to track errors. To test it locally set the environment variable `SENTRY_DSN` to your Sentry 
+DSN before running the service.
+
+```bash
+export SENTRY_DSN="your-dsn"
+```

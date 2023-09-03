@@ -12,6 +12,9 @@ ENV HTTP_PORT 8280
 ENV GRPC_PORT 8281
 ENV MONGO_DB_HOST "mongodb://localhost:27017"
 ENV AUTHOR_SERVICE_ADDRESS "localhost:8181"
+ENV SENTRY_DSN ""
+ENV SENTRY_SAMPLE_RATE "1.0"
+ENV RELEASE_VERSION "dev"
 
 WORKDIR /bin
 COPY --from=builder /app/mosha-quote-service/app .
