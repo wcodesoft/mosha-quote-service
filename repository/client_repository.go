@@ -11,11 +11,6 @@ import (
 type ClientRepository interface {
 	GetAuthor(id string) (data.Author, error)
 }
-
-type ClientsAddress struct {
-	AuthorServiceAddress string
-}
-
 type clientRepository struct {
 	client pb.AuthorServiceClient
 }
