@@ -5,6 +5,7 @@ import (
 	"github.com/wcodesoft/mosha-quote-service/repository"
 	"github.com/wcodesoft/mosha-quote-service/service"
 	mdb "github.com/wcodesoft/mosha-service-common/database"
+	mgrpc "github.com/wcodesoft/mosha-service-common/grpc"
 	mhttp "github.com/wcodesoft/mosha-service-common/http"
 	"github.com/wcodesoft/mosha-service-common/tracing"
 	"os"
@@ -47,9 +48,14 @@ func main() {
 		log.Error("unable to setup sentry: ", err)
 	}
 
-	clientsRepository := repository.NewClientRepository(repository.ClientsAddress{
-		AuthorServiceAddress: authorServiceAddress,
-	})
+	quoteGrpcClientInfo := mgrpc.ClientInfo{
+		Name:    "AuthorService",
+		Address: authorServiceAddress,
+	}
+	clientsRepository, err := repository.NewClientRepository(quoteGrpcClientInfo)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	mongoClient, err := mdb.NewMongoClient(mongoHost)
 	if err != nil {
@@ -75,6 +81,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
+		wg.Done()
 	}()
 
 	go func() {

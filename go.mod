@@ -9,7 +9,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/smartystreets/goconvey v1.8.1
 	github.com/wcodesoft/mosha-author-service v0.1.1
-	github.com/wcodesoft/mosha-service-common v0.0.9
+	github.com/wcodesoft/mosha-service-common v0.0.10
 	go.mongodb.org/mongo-driver v1.12.1
 	google.golang.org/grpc v1.56.1
 	google.golang.org/protobuf v1.31.0
