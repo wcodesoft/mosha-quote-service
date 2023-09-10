@@ -1,6 +1,7 @@
 package service
 
 import (
+	sentryhttp "github.com/getsentry/sentry-go/http"
 	mhttp "github.com/wcodesoft/mosha-service-common/http"
 
 	"encoding/json"
@@ -27,7 +28,13 @@ func (qs *QuoteService) GetPort() string {
 
 func (qs *QuoteService) MakeHandler() http.Handler {
 	r := chi.NewRouter()
+	sentryHandler := sentryhttp.New(sentryhttp.Options{
+		Repanic: true,
+	})
+
 	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	r.Use(sentryHandler.Handle)
 
 	r.Post("/api/v1/quote", qs.addQuoteHandler)
 	r.Post("/api/v1/quote/delete/{id}", qs.deleteQuoteHandler)

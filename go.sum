@@ -63,6 +63,8 @@ github.com/wcodesoft/mosha-author-service v0.1.1 h1:UdOM7muPU9fJNqH+rtfahtRwRWMf
 github.com/wcodesoft/mosha-author-service v0.1.1/go.mod h1:qjV4JraB3jcO0aDY5BjnLQU6FIzh9PLpwLLEqqq58is=
 github.com/wcodesoft/mosha-service-common v0.0.9 h1:nTQaSOEuDS+tAXYO3U8eCT8MVG00vkl8giDm/5V9DJg=
 github.com/wcodesoft/mosha-service-common v0.0.9/go.mod h1:hPNn94cRwS0e2b8Kp134GTfx3+qTDQaT+mU66YnXAYE=
+github.com/wcodesoft/mosha-service-common v0.0.10 h1:BegnBRqycaRqvIh5A4XiDBH5x6eEyMsPdmksRFh5nzk=
+github.com/wcodesoft/mosha-service-common v0.0.10/go.mod h1:hPNn94cRwS0e2b8Kp134GTfx3+qTDQaT+mU66YnXAYE=
 github.com/xdg-go/pbkdf2 v1.0.0 h1:Su7DPu48wXMwC3bs7MCNG+z4FhcyEuz5dlvchbq0B0c=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=
 github.com/xdg-go/scram v1.1.2 h1:FHX5I5B4i4hKRVRBCFRxq1iQRej7WO3hhBuJf+UUySY=
